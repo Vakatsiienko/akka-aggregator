@@ -37,6 +37,7 @@ public class CalculationService {
     }
 
     /**
+     * Method sends to {@link MasterActor "getResult" message} and wait for processing.
      * @param mSecToOut milliseconds to wait for result of future call
      * @return Map of all sending {@link Row}'s by {@link #aggregateAmount(Row)}
      * @throws Exception
@@ -45,7 +46,7 @@ public class CalculationService {
      */
     public Map<Long, Row> getResults(long mSecToOut) throws Exception {
         Timeout timeout = new Timeout(Duration.create(mSecToOut, "milliseconds"));
-        Future<Object> future = Patterns.ask(masterActor, 1, timeout);
+        Future<Object> future = Patterns.ask(masterActor, "getResult", timeout);
         return (Map) Await.result(future, timeout.duration());
     }
 

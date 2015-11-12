@@ -45,7 +45,7 @@ public class MasterActor extends UntypedActor implements Serializable {
     /**
      * <p>If message is instance of {@link Row} - row delegate to worker,</p>
      * <p>if String "initializeWorkers" - {@link #initializeWorkers()} method will call,
-     * <p>if String "collectData" - Master will send notifications to all {@link WorkerActor}'s to send
+     * <p>if String "getResult" - Master will send notifications to all {@link WorkerActor}'s to send
      * their collected data to {@link MasterActor},</p>
      * <p>if Map - collecting all maps to result map, and give this map to sender, who called "collectData".</p>
      * @throws Exception
@@ -56,9 +56,9 @@ public class MasterActor extends UntypedActor implements Serializable {
             router.route(o, getSelf());
         } else if (o instanceof String && o.equals("initializeWorkers")) {
             this.initializeWorkers();
-        } else if (o instanceof String && o.equals("collectData")) {
+        } else if (o instanceof String && o.equals("getResult")) {
             futureRef = getSender();
-            router.route(new Broadcast("getResult"), getSelf());
+            router.route(new Broadcast(o), getSelf());
         } else if (o instanceof Map) {
             numOfRecievedMaps++;
             Map<Long, Row> recieved = (Map) o;
