@@ -5,6 +5,6 @@ package com.akka.testProject;
  */
 public class Main {
     public static void main(String[] args) {
-        DataController.agregateData(args[0], args[1], Integer.valueOf(args[2]));
+        DataService.aggregateData(args[0], args[1], Integer.valueOf(args[2]));
     }
 }

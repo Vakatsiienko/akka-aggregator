@@ -1,6 +1,8 @@
 package com.akka.testProject;
 
 /**
+ * <p>Row is a model of our data.</p>
+ * <br>
  * Created by Iaroslav on 11/11/2015.
  */
 public class Row {
@@ -21,6 +23,11 @@ public class Row {
         return amount;
     }
 
+    /**
+     * Takes given row and agregate amount to this row.
+     * @param row
+     * @return Row with this id and sum of rows amount.
+     */
     public Row sumAmount(Row row) {
         this.amount += row.amount;
         return this;

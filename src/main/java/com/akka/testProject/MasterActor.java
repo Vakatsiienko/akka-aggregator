@@ -2,7 +2,6 @@ package com.akka.testProject;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
-import akka.actor.Terminated;
 import akka.actor.UntypedActor;
 import akka.routing.*;
 
@@ -16,18 +15,23 @@ import java.util.Map;
  * Created by Iaroslav on 11/12/2015.
  */
 public class MasterActor extends UntypedActor implements Serializable {
+    /**
+     *
+     * @param actorPoolSize number of workerActor that will be initialize when "initializeWorkers" message was called.
+     */
     public MasterActor(int actorPoolSize) {
         this.actorPoolSize = actorPoolSize;
     }
-    /**
-     * Initialization Router.
-     */
-    private Router router;
+
     private Map<Long, Row> result = new HashMap<>();
+    private Router router;
     private int numOfRecievedMaps;
     private ActorRef futureRef;
     private int actorPoolSize;
 
+    /**
+     * Initialization Router, number of workerActors given in {@link MasterActor} constructor.
+     */
     public void initializeWorkers() {
         List<Routee> routees = new ArrayList<>(actorPoolSize);
         for (int i = 0; i < actorPoolSize; i++) {
@@ -38,17 +42,23 @@ public class MasterActor extends UntypedActor implements Serializable {
         router = new Router(new RoundRobinRoutingLogic(), routees);
     }
 
-
-
+    /**
+     * <p>If message is instance of {@link Row} - row delegate to worker,</p>
+     * <p>if String "initializeWorkers" - {@link #initializeWorkers()} method will call,
+     * <p>if String "collectData" - Master will send notifications to all {@link WorkerActor}'s to send
+     * their collected data to {@link MasterActor},</p>
+     * <p>if Map - collecting all maps to result map, and give this map to sender, who called "collectData".</p>
+     * @throws Exception
+     */
     @Override
     public void onReceive(Object o) throws Exception {
         if (o instanceof Row) {
             router.route(o, getSelf());
         } else if (o instanceof String && o.equals("initializeWorkers")) {
             this.initializeWorkers();
-        } else if (o instanceof Integer) {
+        } else if (o instanceof String && o.equals("collectData")) {
             futureRef = getSender();
-            router.route(new Broadcast(0), getSelf());
+            router.route(new Broadcast("getResult"), getSelf());
         } else if (o instanceof Map) {
             numOfRecievedMaps++;
             Map<Long, Row> recieved = (Map) o;
@@ -62,6 +72,4 @@ public class MasterActor extends UntypedActor implements Serializable {
             }
         } else unhandled(o);
     }
-
-
 }

@@ -6,9 +6,14 @@ import java.util.Map;
 /**
  * Created by Iaroslav on 11/11/2015.
  */
-public class DataController {
-
-    public static void agregateData(String dataFileName, String fileToWrite, int actorPoolSize) {
+public class DataService {
+    /**
+     * Method open aggregates data from dataFileName and write it to fileToWrite.
+     * @param dataFileName filename of file from whom {@link BufferedReader} will read data.
+     * @param fileToWrite filename of file in wich {@link BufferedWriter} will write data.
+     * @param actorPoolSize size of {@link akka.routing.Router} of data handlers {@link WorkerActor}.
+     */
+    public static void aggregateData(String dataFileName, String fileToWrite, int actorPoolSize) {
         BufferedReader rdr = null;
         BufferedWriter writer = null;
         CalculationService calculationService = new CalculationService(actorPoolSize);
@@ -20,9 +25,7 @@ public class DataController {
                 calculationService.aggregateAmount(new Row(Long.valueOf(currentLine[0]), Long.valueOf(currentLine[1])));
             }
             Map<Long, Row> result = calculationService.getResults(50000);
-            System.out.println("workIsDone");
             calculationService.stopActors();
-            System.out.println("sendStop");
             writer = new BufferedWriter(new FileWriter(fileToWrite));
             for (Map.Entry<Long, Row> entry : result.entrySet()) {
                 writer.write(String.valueOf(entry.getKey()) + ";" + String.valueOf(entry.getValue().getAmount()));
