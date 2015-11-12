@@ -8,17 +8,17 @@ import java.util.Map;
  */
 public class DataService {
     /**
-     * Method open aggregates data from dataFileName and write it to fileToWrite.
-     * @param dataFileName filename of file from whom {@link BufferedReader} will read data.
-     * @param fileToWrite filename of file in wich {@link BufferedWriter} will write data.
+     * Method open aggregates data from sourceFile and write it to destinationFile.
+     * @param sourceFile name of file, from which to read data.
+     * @param destinationFile name of file, to which to write data.
      * @param actorPoolSize size of {@link akka.routing.Router} of data handlers {@link WorkerActor}.
      */
-    public static void aggregateData(String dataFileName, String fileToWrite, int actorPoolSize) {
+    public static void aggregateData(String sourceFile, String destinationFile, int actorPoolSize) {
         BufferedReader rdr = null;
         BufferedWriter writer = null;
         CalculationService calculationService = new CalculationService(actorPoolSize);
         try {
-            rdr = new BufferedReader(new FileReader(dataFileName));
+            rdr = new BufferedReader(new FileReader(sourceFile));
             String[] currentLine;
             while (rdr.ready()) {
                 currentLine = rdr.readLine().split(";");
@@ -26,7 +26,7 @@ public class DataService {
             }
             Map<Long, Row> result = calculationService.getResults(50000);
             calculationService.stopActors();
-            writer = new BufferedWriter(new FileWriter(fileToWrite));
+            writer = new BufferedWriter(new FileWriter(destinationFile));
             for (Map.Entry<Long, Row> entry : result.entrySet()) {
                 writer.write(String.valueOf(entry.getKey()) + ";" + String.valueOf(entry.getValue().getAmount()));
                 writer.newLine();
