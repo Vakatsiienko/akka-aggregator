@@ -6,10 +6,7 @@ import akka.actor.UntypedActor;
 import akka.routing.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Iaroslav on 11/12/2015.
@@ -25,7 +22,7 @@ public class MasterActor extends UntypedActor implements Serializable {
 
     private Map<Long, Row> result = new HashMap<>();
     private Router router;
-    private int numOfRecievedMaps;
+    private int numOfReceivedMaps;
     private ActorRef futureRef;
     private int actorPoolSize;
 
@@ -60,14 +57,9 @@ public class MasterActor extends UntypedActor implements Serializable {
             futureRef = getSender();
             router.route(new Broadcast(o), getSelf());
         } else if (o instanceof Map) {
-            numOfRecievedMaps++;
-            Map<Long, Row> recieved = (Map) o;
-            for (Map.Entry<Long, Row> entry : recieved.entrySet()) {
-                if (result.containsKey(entry.getKey()))
-                    result.put(entry.getKey(), result.get(entry.getKey()).sumAmount(entry.getValue()));
-                else result.put(entry.getKey(), entry.getValue());
-            }
-            if (numOfRecievedMaps == actorPoolSize) {
+            numOfReceivedMaps++;
+            ((Map<Long, Row>) o).forEach((k, v) -> result.merge(k, v, (Row::sumAmount)));
+            if (numOfReceivedMaps == actorPoolSize) {
                 futureRef.tell(result, getSelf());
             }
         } else unhandled(o);

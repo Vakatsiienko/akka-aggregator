@@ -2,7 +2,8 @@
 To run project just set program arguments:
 first - name of file, from which to read data;
 second - name of file, to which to write data;
-third - number of handlers to handle data.
+third - number of handlers to handle data;
+fourth - milliseconds of awaiting for actor's work result.
 Then run main() in Main.class.
 Task:
 We have file on 100 000 lines, lines have data in format "ID; amount"; Total of different ID in file 1000 pieces.

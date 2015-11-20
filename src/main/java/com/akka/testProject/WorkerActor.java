@@ -21,8 +21,7 @@ public class WorkerActor extends UntypedActor implements Serializable {
     public void onReceive(Object o) throws Exception {
         if (o instanceof Row) {
             Row row = (Row) o;
-            if (result.containsKey(row.getId())) result.put(row.getId(), result.get(row.getId()).sumAmount(row));
-            else result.put(row.getId(), row);
+            result.merge(row.getId(), row, Row::sumAmount);
         } else if (o instanceof String && o.equals("getResult"))
             getSender().tell(result, getSelf());
         else unhandled(o);
