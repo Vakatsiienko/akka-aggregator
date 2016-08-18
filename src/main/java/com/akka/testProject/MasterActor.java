@@ -51,9 +51,9 @@ public class MasterActor extends UntypedActor implements Serializable {
     public void onReceive(Object o) throws Exception {
         if (o instanceof Row) {
             router.route(o, getSelf());
-        } else if (o instanceof String && o.equals("initializeWorkers")) {
+        } else if (o.equals("initializeWorkers")) {
             this.initializeWorkers();
-        } else if (o instanceof String && o.equals("getResult")) {
+        } else if (o.equals("getResult")) {
             futureRef = getSender();
             router.route(new Broadcast(o), getSelf());
         } else if (o instanceof Map) {

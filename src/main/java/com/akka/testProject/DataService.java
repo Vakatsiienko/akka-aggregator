@@ -1,5 +1,6 @@
 package com.akka.testProject;
 
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -21,18 +22,18 @@ public class DataService {
      * @param sourceFile      name of file, from which to read data.
      * @param destinationFile name of file, to which to write data.
      * @param actorPoolSize   size of {@link akka.routing.Router} of data handlers {@link WorkerActor}.
-     * @param processTime     milliseconds of awaiting for actor's work result.
+     * @param processTime     seconds of awaiting for actor's work result.
      */
     public void aggregateData(String sourceFile, String destinationFile, int actorPoolSize, long processTime) {
         CalculationService calculationService = calculationServiceFactory.getCalcServiceInstance(actorPoolSize);
         try {
             Files.lines(Paths.get(sourceFile))
                     .map(q -> q.split(";"))
-                    .forEach(v -> calculationService.aggregateAmount(new Row(Long.valueOf(v[0]), Long.valueOf(v[1]))));
+                    .forEach(v -> calculationService.aggregateAmount(new Row(Long.valueOf(v[0]), BigDecimal.valueOf(Double.valueOf(v[1])))));
             Map<Long, Row> result = calculationService.getResults(processTime);
             calculationService.stopActors();
             Files.write(Paths.get(destinationFile), result.values().stream()
-                    .map(r -> r.getId() + ";" + r.getAmount())
+                    .map(r -> r.getId() + ";" + r.getAmount().doubleValue())
                     .collect(Collectors.toList()));
         } catch (Exception e2) {
             e2.printStackTrace();

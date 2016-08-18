@@ -1,5 +1,7 @@
 package com.akka.testProject;
 
+import java.math.BigDecimal;
+
 /**
  * <p>Row is a model of our data.</p>
  * <br>
@@ -8,9 +10,9 @@ package com.akka.testProject;
 public class Row {
 
     private long id;
-    private long amount;
+    private BigDecimal amount;
 
-    public Row(long id, long amount) {
+    public Row(long id, BigDecimal amount) {
         this.id = id;
         this.amount = amount;
     }
@@ -19,7 +21,7 @@ public class Row {
         return id;
     }
 
-    public long getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
@@ -29,7 +31,7 @@ public class Row {
      * @return Row with this id and sum of rows amount.
      */
     public Row sumAmount(Row row) {
-        this.amount += row.amount;
+        this.amount = amount.add(row.getAmount());
         return this;
     }
 }

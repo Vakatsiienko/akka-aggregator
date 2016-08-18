@@ -38,16 +38,16 @@ public class CalculationService {
 
     /**
      * Method sends to {@link MasterActor "getResult" message} and wait for processing.
-     * @param mSecToOut milliseconds to wait for result of future call
+     * @param secToOut milliseconds to wait for result of future call
      * @return Map of all sending {@link Row}'s by {@link #aggregateAmount(Row)}
      * @throws Exception
      * @see Patterns#ask(ActorRef, Object, Timeout)
      * @see Await#result(Awaitable, Duration)
      */
-    public Map<Long, Row> getResults(long mSecToOut) throws Exception {
-        Timeout timeout = new Timeout(Duration.create(mSecToOut, "milliseconds"));
+    public Map<Long, Row> getResults(long secToOut) throws Exception {
+        Timeout timeout = new Timeout(Duration.create(secToOut, "seconds"));
         Future<Object> future = Patterns.ask(masterActor, "getResult", timeout);
-        return (Map) Await.result(future, timeout.duration());
+        return (Map<Long, Row>) Await.result(future, timeout.duration());
     }
 
     /**
