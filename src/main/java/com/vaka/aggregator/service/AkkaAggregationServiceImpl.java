@@ -74,13 +74,13 @@ public class AkkaAggregationServiceImpl implements AggregationService {
     }
 
 
-    private <T> T waitForResult(SupplierWithException<Optional<T>> resultSupplier, long millisBetweenResultRequest) throws Exception {
+    private <T> T waitForResult(SupplierWithException<Optional<T>> resultSupplier, long millisBetweenGetFromSupplier) throws Exception {
         while (true) {
             Optional<T> result = resultSupplier.get();
             if (result.isPresent()) {
                 return result.get();
             } else {
-                Thread.sleep(millisBetweenResultRequest);
+                Thread.sleep(millisBetweenGetFromSupplier);
             }
         }
     }

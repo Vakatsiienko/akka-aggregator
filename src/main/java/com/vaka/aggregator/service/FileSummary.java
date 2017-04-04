@@ -54,7 +54,7 @@ public class FileSummary {
     }
 
 
-    public static class Validator {
+    private static class Validator {
         private static void validateCreatingParameters(AggregationService aggregationService, String filePath) {
             StringJoiner messageJoiner = new StringJoiner("\n");
             if (!aggregationService.ready()) {

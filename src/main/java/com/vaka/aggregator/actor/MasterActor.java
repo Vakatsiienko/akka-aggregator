@@ -29,6 +29,7 @@ public class MasterActor extends UntypedActor implements Serializable {
 
     /**
      * Our constructor
+     *
      * @return instance of MasterActor with initialized workers
      */
     public static MasterActor of(int actorPoolSize, int defaultUniqueRowsCount) {
@@ -62,9 +63,8 @@ public class MasterActor extends UntypedActor implements Serializable {
         } else if (o.toString().equals("endOfData")) {
             askAggregatorsForResult();
         } else if (o.toString().equals("getResult")) {
-            if (areAllAggregatorsAccepted()) {
-                getSender().tell(Optional.of(amountByIdRepository), ActorRef.noSender());
-            } else getSender().tell(Optional.empty(),ActorRef.noSender());
+            returnResult();
+
         } else unhandled(o);
     }
 
@@ -82,11 +82,17 @@ public class MasterActor extends UntypedActor implements Serializable {
                 .forEach(key -> amountByIdRepository.merge(key, map.get(key), BigDecimal::add));
     }
 
+    private void returnResult() {
+        if (areAllAggregatorsAccepted()) {
+            getSender().tell(Optional.of(amountByIdRepository), ActorRef.noSender());
+        } else getSender().tell(Optional.empty(), ActorRef.noSender());
+    }
+
     private boolean areAllAggregatorsAccepted() {
         return acceptedRepositories == actorPoolSize;
     }
 
-    public static class Validator {
+    private static class Validator {
         private static void validateCreatingParameters(int actorPoolSize, int uniqueRowsCount) {
             StringJoiner messageJoiner = new StringJoiner("\n");
             if (actorPoolSize < 1) {
