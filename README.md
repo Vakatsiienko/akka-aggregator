@@ -1,4 +1,4 @@
-# akkaTestProject
+# Akka-aggregator
 For setup just run Main.
 You can change settings like actor pool or files paths in default.properties in resources.
 <br>
